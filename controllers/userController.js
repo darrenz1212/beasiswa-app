@@ -1,6 +1,10 @@
 const { User } = require('../models');
 const bcrypt = require('bcrypt');
 
+
+const index = async (req,res) =>{
+    res.render('admin/index',{message: "Admin Site"})
+}
 const getUser = async (req, res) => {
     const userList = await User.findAll();
     const result = userList.map(u => ({
@@ -11,7 +15,7 @@ const getUser = async (req, res) => {
         program_studi_id: u.program_studi_id,
         fakultas_id: u.fakultas_id
     }));
-    res.json({ user: result });
+    res.render('admin/showuser',{ user:result });
 };
 
 const getUserById = async (req, res) => {
@@ -83,6 +87,7 @@ const deleteUser = async (req, res) => {
 };
 
 module.exports = {
+    index,
     getUser,
     getUserById,
     addUser,

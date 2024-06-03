@@ -1,9 +1,8 @@
 const { Mahasiswa, User } = require('../models');
 
-const hai = async (req,res)=>{
-    res.render('hai',{
-        message: "Hai"
-    })
+
+const index = async (req,res) =>{
+    res.render('mahasiswa/index',{ message: "Mahasiswa Site"})
 }
 const getMahasiswa = async (req, res) => {
     try {
@@ -16,7 +15,7 @@ const getMahasiswa = async (req, res) => {
             ipk: m.ipk_terakhir,
             status: m.status_aktif
         }));
-        res.render('mahasiswa', { mahasiswa: result });
+        res.render('mahasiswa/showmahasiswa', { mahasiswa: result });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -120,7 +119,7 @@ const deleteMahasiswa = async (req, res) => {
 
 
 module.exports = {
-    hai,
+    index,
     getMahasiswa,
     getMahasiswaById,
     addMahasiswa,

@@ -1,0 +1,21 @@
+extends ../layout/master
+
+block web-content
+    h1 Daftar Mahasiswa
+    table(border="1")
+        thead
+            tr
+                th User ID
+                th Username
+                th Role
+                th Program Studi
+                th Fakultas
+        tbody
+            each m in user
+                tr
+                    td= m.user_id
+                    td= m.username
+                    td= m.role
+                    td= m.program_studi_id
+                    td= m.fakultas_id
+
