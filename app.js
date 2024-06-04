@@ -4,8 +4,8 @@ const path = require('path');
 const session = require('express-session');
 const { sequelize } = require('./models');
 const mahasiswaRoutes = require('./routes/mahasiswaRoutes');
-const userRoutes = require('./routes/userRoutes');
-const authRoutes = require('./routes/authRoutes'); // Tambahkan rute auth
+const adminRoutes = require('./routes/adminRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 app.use(bodyParser.json());
@@ -31,17 +31,14 @@ sequelize.sync()
     });
 
 // Register routes
-app.use('/mahasiswa', mahasiswaRoutes);
-app.use('/admin', userRoutes);
 app.use('/auth', authRoutes);
+app.use('/admin', adminRoutes);
+app.use('/auth',authRoutes);
+
 
 app.get('/', (req, res) => {
-    res.redirect('/mahasiswa');
+    res.redirect('/auth');
 });
-
-app.get('/', (req, res)=>{
-    res.redirect('/admin')
-})
 
 
 app.listen(8000, () => {

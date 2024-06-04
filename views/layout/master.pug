@@ -7,7 +7,7 @@ html(lang="en")
         meta(name="description", content="")
         meta(name="author", content="")
 
-        title SB Admin 2 - Dashboard
+        block title
 
         // Custom fonts for this template
         link(href="/vendor/fontawesome-free/css/all.min.css", rel="stylesheet", type="text/css")
@@ -15,6 +15,7 @@ html(lang="en")
 
         // Custom styles for this template
         link(href="/css/sb-admin-2.min.css", rel="stylesheet")
+        block custom-css
 
     body(id="page-top")
         // Page Wrapper
@@ -80,7 +81,7 @@ html(lang="en")
                     #collapsePages.collapse(aria-labelledby="headingPages", data-parent="#accordionSidebar")
                         .bg-white.py-2.collapse-inner.rounded
                             h6.collapse-header Login Screens:
-                            a.collapse-item(href="login.html") Login
+                            a.collapse-item(href="login.pug") Login
                             a.collapse-item(href="register.html") Register
                             a.collapse-item(href="forgot-password.html") Forgot Password
                             .collapse-divider
@@ -279,7 +280,7 @@ html(lang="en")
                         .modal-body Select "Logout" below if you are ready to end your current session.
                         .modal-footer
                             button.btn.btn-secondary(type="button", data-dismiss="modal") Cancel
-                            a.btn.btn-primary(href="login.html") Logout
+                            a.btn.btn-primary(href="login.pug") Logout
 
         // Bootstrap core JavaScript
         script(src="/vendor/jquery/jquery.min.js")

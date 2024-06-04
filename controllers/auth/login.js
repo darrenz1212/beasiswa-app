@@ -2,6 +2,10 @@ const { User } = require('../../models');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 
+const index = (req, res) => {
+    res.render('auth/login');
+};
+
 const login = async (req, res) => {
     const { username, password } = req.body;
 
@@ -13,7 +17,13 @@ const login = async (req, res) => {
             req.session.username = user.username;
             req.session.role = user.role;
 
-            res.json({ message: 'Login successful' });
+            if (user.role === 'admin') {
+                res.redirect('/admin');
+            } else if (user.role === 'mahasiswa') {
+                res.redirect('/mahasiswa');
+            } else {
+                res.redirect('/');
+            }
         } else {
             res.status(401).json({ message: 'Invalid username or password' });
         }
@@ -27,11 +37,12 @@ const logout = (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        res.json({ message: 'Logged out successfully' });
+        res.redirect('/auth/login');
     });
 };
 
 module.exports = {
+    index,
     login,
     logout
 };
