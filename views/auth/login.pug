@@ -30,6 +30,9 @@ html(lang="en")
                                     .p-5
                                         .text-center
                                             h1.h4.text-gray-900.mb-4 Welcome Back!
+                                            if error
+                                                .alert.alert-danger
+                                                    | #{error}
                                         form.user(method="post" action="/auth/login")
                                             .form-group
                                                 input.form-control.form-control-user(type="text" name="username" placeholder="Enter Username...")
@@ -50,9 +53,9 @@ html(lang="en")
 
                                         hr
                                         .text-center
-                                            a.small(href="forgot-password.html") Forgot Password?
+                                            a.small(href="/auth/forgot-password") Forgot Password?
                                         .text-center
-                                            a.small(href="register.html") Create an Account!
+                                            a.small(href="/auth/register") Create an Account!
 
         // Bootstrap core JavaScript
         script(src="/vendor/jquery/jquery.min.js")

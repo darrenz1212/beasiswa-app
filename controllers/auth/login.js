@@ -1,9 +1,9 @@
 const { User } = require('../../models');
 const bcrypt = require('bcrypt');
-const session = require('express-session');
 
 const index = (req, res) => {
-    res.render('auth/login');
+    const error = req.flash('error');
+    res.render('auth/login', { error });
 };
 
 const login = async (req, res) => {
@@ -25,10 +25,12 @@ const login = async (req, res) => {
                 res.redirect('/');
             }
         } else {
-            res.status(401).json({ message: 'Invalid username or password' });
+            req.flash('error', 'Invalid username or password');
+            res.redirect('/auth/login');
         }
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        req.flash('error', error.message);
+        res.redirect('/auth/login');
     }
 };
 
