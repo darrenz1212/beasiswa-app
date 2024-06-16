@@ -1,10 +1,9 @@
-const { Mahasiswa, User } = require('../models');
+// controllers/mahasiswaController.js
+const { Mahasiswa, JenisBeasiswa, PeriodePengajuan, ProgramStudi, Fakultas, PengajuanBeasiswa} = require('../models');
+const {where} = require("sequelize");
 
 
-const index = async (req,res) =>{
-    res.render('mahasiswa/index',{ message: "Mahasiswa Site"})
-}
-const getMahasiswa = async (req, res) => {
+const index = async (req, res) => {
     try {
         const mahasiswaList = await Mahasiswa.findAll();
         const result = mahasiswaList.map(m => ({
@@ -13,116 +12,151 @@ const getMahasiswa = async (req, res) => {
             nama_mahasiswa: m.nama_mahasiswa,
             prodi: m.program_studi_id,
             ipk: m.ipk_terakhir,
-            status: m.status_aktif
+            status: m.status_aktif ? 'Aktif' : 'Tidak Aktif'
         }));
-        res.render('mahasiswa/showmahasiswa', { mahasiswa: result });
+        console.log(req.session.user_id)
+        res.render('mahasiswa/index', { mahasiswa: result, user : req.session.user_id });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
-const getMahasiswaById = async (req, res) => {
+const timeline = async (req, res) => {
     try {
-        const { nrp } = req.params;
-        const mahasiswa = await Mahasiswa.findOne({ where: { nrp } });
+        const timelines = await JenisBeasiswa.findAll({
+            include: [{
+                model: PeriodePengajuan,
+                attributes: ['nama_periode','tanggal_mulai','tanggal_selesai'],
+                required: true
+            }]
+        });
 
-        if (!mahasiswa) {
-            return res.status(404).json({ message: 'Mahasiswa not found' });
-        }
+        const result = timelines.map(t => ({
+            beasiswa_id: t.beasiswa_id,
+            nama_beasiswa: t.nama_beasiswa,
+            deskripsi_beasiswa: t.deskripsi_beasiswa,
+            nama_periode: t.PeriodePengajuan.nama_periode,
+            tanggal_mulai : t.PeriodePengajuan.tanggal_mulai,
+            tanggal_selesai : t.PeriodePengajuan.tanggal_selesai
+        }));
+
+        res.render('mahasiswa/timeline', {
+            timeline: result
+        });
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+const showPendaftaran = async (req, res) => {
+    try {
+        const user = req.session.user_id;
+
+        const timelines = await JenisBeasiswa.findAll({
+            include: [{
+                model: PeriodePengajuan,
+                attributes: ['periode_id', 'nama_periode'],
+                required: true
+            }]
+        });
+
+        const beasiswaDetail = timelines.map(t => ({
+            periode_id: t.PeriodePengajuan.periode_id,
+            beasiswa_id: t.beasiswa_id,
+            nama_beasiswa: t.nama_beasiswa,
+            deskripsi_beasiswa: t.deskripsi_beasiswa,
+            nama_periode: t.PeriodePengajuan.nama_periode,
+            tanggal_mulai: t.PeriodePengajuan.tanggal_mulai,
+            tanggal_selesai: t.PeriodePengajuan.tanggal_selesai
+        }));
+
+        const mhswData = await Mahasiswa.findOne({
+            where: {
+                'user_id': user
+            }
+        });
+
+        const jurusan = await ProgramStudi.findOne({
+            include: [{
+                model: Fakultas,
+                attributes: ['nama_fakultas'],
+                required: true
+            }],
+            where: {
+                'program_studi_id': mhswData.program_studi_id
+            }
+        });
+
+        const result = beasiswaDetail.map(b => ({
+            nrp: mhswData.nrp,
+            nama: mhswData.nama_mahasiswa,
+            ipk: mhswData.ipk_terakhir,
+            fakultas: jurusan.Fakulta.nama_fakultas,
+            prodi: jurusan.nama_program_studi,
+            namaBeasiswa: b.nama_beasiswa,
+            periode: b.nama_periode
+        }));
+
+        res.render('mahasiswa/pengajuan', { result });
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+const history = async (req,res) =>{
+    try {
+        const user = req.session.user_id;
+
+        const mhswData = await Mahasiswa.findOne({
+            where: {
+                'user_id': user
+            },
+            include : [{
+                model : ProgramStudi,
+                attributes : ['nama_program_studi'],
+                required : true
+            }]
+        })
+
+        const history = await PengajuanBeasiswa.findOne({
+            where : {
+                'nrp' : mhswData.nrp
+            }
+        })
+        const timelines = await JenisBeasiswa.findOne({
+            where :{
+                'beasiswa_id' :  history.beasiswa_id
+            },
+            include: [{
+                model: PeriodePengajuan,
+                attributes: ['periode_id', 'nama_periode'],
+                required: true
+            }]
+        });
 
         const result = {
-            nrp: mahasiswa.nrp,
-            user_id: mahasiswa.user_id,
-            nama_mahasiswa: mahasiswa.nama_mahasiswa,
-            prodi: mahasiswa.program_studi_id,
-            ipk: mahasiswa.ipk_terakhir,
-            status: mahasiswa.status_aktif
-        };
+            namaBeasiswa : timelines.nama_beasiswa,
+            nrp : mhswData.nrp,
+            nama : mhswData.nama_mahasiswa,
+            prodi : mhswData.ProgramStudi.nama_program_studi,
+            ipk : mhswData.ipk_terakhir,
+            periode : timelines.PeriodePengajuan.nama_periode
 
-        res.json(result);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
 
-const addMahasiswa = async (req, res) => {
-    try {
-        const { userID } = req.params;
-        const data = req.body;
-
-        const user_info = await User.findOne({ where: { user_id: userID } });
-
-        if (!user_info) {
-            return res.status(404).json({ message: 'User not found' });
         }
-
-        const new_mahasiswa = await Mahasiswa.create({
-            nrp: data.nrp,
-            user_id: userID,
-            nama_mahasiswa: user_info.username,
-            program_studi_id: user_info.program_studi_id,
-            ipk_terakhir: data.ipk,
-            status_aktif: data.status
-        });
-
-        res.json({
-            message: 'Mahasiswa added successfully',
-            nrp: new_mahasiswa.nrp,
-            nama_mahasiswa: new_mahasiswa.nama_mahasiswa,
-            program_studi_id: user_info.program_studi_id
-        });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.render('mahasiswa/history', {result : result})
+    }catch (error){
+        res.status(500).json({error: error.message})
     }
-};
-
-const updateMahasiswa = async (req, res) => {
-    try {
-        const { nrp } = req.params;
-        const data = req.body;
-
-        const mahasiswa = await Mahasiswa.findOne({ where: { nrp } });
-
-        if (!mahasiswa) {
-            return res.status(404).json({ message: 'Mahasiswa not found' });
-        }
-
-        mahasiswa.nama_mahasiswa = data.nama_mahasiswa || mahasiswa.nama_mahasiswa;
-        mahasiswa.program_studi_id = data.program_studi_id || mahasiswa.program_studi_id;
-        mahasiswa.ipk_terakhir = data.ipk || mahasiswa.ipk_terakhir;
-        mahasiswa.status_aktif = data.status || mahasiswa.status_aktif;
-
-        await mahasiswa.save();
-        res.json({ message: 'Mahasiswa updated successfully' });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-const deleteMahasiswa = async (req, res) => {
-    try {
-        const { nrp } = req.params;
-
-        const mahasiswa = await Mahasiswa.findOne({ where: { nrp } });
-
-        if (!mahasiswa) {
-            return res.status(404).json({ message: 'Mahasiswa not found' });
-        }
-
-        await mahasiswa.destroy();
-        res.json({ message: 'Mahasiswa deleted successfully' });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
+}
 
 
 
 module.exports = {
     index,
-    getMahasiswa,
-    getMahasiswaById,
-    addMahasiswa,
-    updateMahasiswa,
-    deleteMahasiswa
+    timeline,
+    showPendaftaran,
+    history
 };

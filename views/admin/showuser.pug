@@ -1,21 +1,28 @@
 extends ../layout/master
-
+block title
+    title Daftar User
+block custom-css
+    link(href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet")
 block web-content
-    h1 Daftar Mahasiswa
-    table(border="1")
-        thead
-            tr
-                th User ID
-                th Username
-                th Role
-                th Program Studi
-                th Fakultas
-        tbody
-            each m in user
-                tr
-                    td= m.user_id
-                    td= m.username
-                    td= m.role
-                    td= m.program_studi_id
-                    td= m.fakultas_id
+    .card.shadow.mb-4
+        .card-header.py-3
+            h6.m-0.font-weight-bold.text-primary Daftar User
+        .card-body
+            .table-responsive
+                table.table.table-bordered(id="dataTable", width="100%", cellspacing="0")
+                    thead
+                        tr
+                            th User ID
+                            th Username
+                            th Role
+                            th Prodi
+                            th Fakultas
+                    tbody
+                        each m in user
+                            tr
+                                td= m.user_id
+                                td= m.username
+                                td= m.role
+                                td= m.program_studi_id
+                                td= m.fakultas_id
 
