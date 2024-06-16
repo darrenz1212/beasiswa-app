@@ -1,4 +1,4 @@
-const { User } = require('../../models');
+const { User, Mahasiswa } = require('../../models');
 const bcrypt = require('bcrypt');
 
 const index = (req, res) => {
@@ -10,31 +10,46 @@ const register = async (req, res) => {
     const { username, password, role, program_studi_id, fakultas_id } = req.body;
 
     try {
-        if (!password) {
-            req.flash('error', 'Password is required');
+        if (!username || !password || !role) {
+            req.flash('error', 'Username, password, and role are required.');
             return res.redirect('/auth/register');
         }
 
-        console.log('Registering user:', req.body); // Debug log
 
-        // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        console.log('Hashed Password:', hashedPassword); // Debug log
 
-        // Create the new user
         const newUser = await User.create({
             username,
             password: hashedPassword,
             role,
-            program_studi_id,
-            fakultas_id
+            program_studi_id: program_studi_id || null,
+            fakultas_id: fakultas_id || null,
         });
+
+        console.log('New user created:', newUser);
+
+        // Find the user to get user_id
+        const cUser = await User.findOne({ where: { username } });
+
+        console.log('Current user found:', cUser);
+
+        if (cUser.role === 'mahasiswa') {
+            console.log('Attempting to create Mahasiswa');
+            await Mahasiswa.create({
+                user_id: cUser.user_id,
+                nama_mahasiswa: cUser.username,
+                program_studi_id: cUser.program_studi_id,
+                ipk_terakhir: 0,
+                status_aktif: true
+            });
+            console.log("Mahasiswa berhasil ditambah");
+        }
 
         res.redirect('/auth/login');
     } catch (error) {
-        console.error('Error during registration:', error.message); // Debug log
-        req.flash('error', error.message);
+        console.error('Error during registration:', error);
+        req.flash('error', 'Registration failed: ' + error.message);
         res.redirect('/auth/register');
     }
 };
