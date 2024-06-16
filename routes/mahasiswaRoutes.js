@@ -7,6 +7,9 @@ const { requireAuth } = require('../middleware/auth');
 router.get('/', requireAuth, mahasiswaController.index);
 router.get('/timeline',requireAuth,mahasiswaController.timeline)
 router.get('/pengajuan',requireAuth,mahasiswaController.showPendaftaran)
+router.post('/pengajuan', requireAuth, mahasiswaController.ajukanBeasiswa);
 router.get('/history',requireAuth,mahasiswaController.history)
+router.delete('/pengajuan/:pengajuanId', requireAuth, mahasiswaController.deletePengajuan);
+
 
 module.exports = router;

@@ -161,14 +161,14 @@ block top-bar
 
 block web-content
     h1.h4.text-gray-900.mb-4 Daftar Beasiswa
-    form.user(method="post" action="/auth/register")
+    form.user(method="post" action="/mahasiswa/pengajuan" enctype="multipart/form-data")
         .form-group.row
             .col-sm-12.mb-3.mb-sm-0
                 label(for="NRP") NRP
-                input.form-control.form-control-user(type="text" name="username" id="exampleFirstName" value=result[0].nrp readonly)
+                input.form-control.form-control-user(type="text" name="nrp" id="exampleFirstName" value=result[0].nrp readonly)
         .form-group.row
             .col-sm-6.mb-3.mb-sm-0
-                label(for="n ama Mahasiswa") Nama Mahasiswa
+                label(for="namaMahasiswa") Nama Mahasiswa
                 input.form-control.form-control-user(type="text" name="nama" id="exampleInputNama" value=result[0].nama readonly)
             .col-sm-6.text-center
                 label(for="ipk") IPK
@@ -184,16 +184,20 @@ block web-content
 
         .form-group.row
             .col-sm-6.mb-3.mb-sm-0
-                label(for="namaBeasiswa") Nama Beasiswa
-                select.form-control(name="namaBeasiswa" id="namaBeasiswa" placeholder="Nama Beasiswa")
+                label(for="beasiswa_id") Nama Beasiswa
+                select.form-control(name="beasiswa_id" id="beasiswa_id" placeholder="Nama Beasiswa")
                     each r in result
-                        option(value=r.namaBeasiswa) #{r.namaBeasiswa}
+                        option(value=r.beasiswa_id) #{r.namaBeasiswa}
             .col-sm-6
                 label(for="periode") Periode Beasiswa
                 select.form-control(name="periode" id="periode" placeholder="Periode Beasiswa")
                     each e in result
-                        option(value=e.periode) #{e.periode}
+                        option(value=e.periode_id) #{e.periode}
+        .form-group.row
+            .col-sm-12.mb-3.mb-sm-0
+                label(for="dokumen") Unggah Dokumen
+                input.form-control(type="file" name="dokumen" id="dokumen")
 
-        button.btn.btn-primary.btn-user.btn-block(type="submit") Register Account
+        button.btn.btn-primary.btn-user.btn-block(type="submit") Ajukan Beasiswa
 
 

@@ -161,31 +161,92 @@ block top-bar
 
 block web-content
     h1.h4.text-gray-900.mb-4 History Beasiswa
-    table.table
-        thead
-            tr
-                th Nama Beasiswa
-                th NRP
-                th Nama Mahasiswa
-                th Program Studi
-                th IPK Terakhir
-                th Periode
-                th Status Prodi
-                th Status Fakultas
-                th Action
+    if result != null
+        table.table
+            thead
+                tr
+                    th Nama Beasiswa
+                    th NRP
+                    th Nama Mahasiswa
+                    th Program Studi
+                    th IPK Terakhir
+                    th Periode
+                    th Status Prodi
+                    th Status Fakultas
+                    th Action
+            tbody
+                tr
+                    td= result.namaBeasiswa
+                    td= result.nrp
+                    td= result.nama
+                    td= result.prodi
+                    td= result.ipk
+                    td= result.periode
+                    td Diajukan
+                    td Diajukan
+                    td
+                        button.btn.btn-danger.btn-sm.btn-delete(type="button", data-id=result.pengajuanId) Delete
+    else
+        h1 Anda Tidak Memiliki Pengajuan
 
-        tbody
-            tr
-                td= result.namaBeasiswa
-                td= result.nrp
-                td= result.nama
-                td= result.prodi
-                td= result.ipk
-                td= result.periode
-                //Sementara gini dlu
-                td Diajukan
-                td Diajukan
-                td
-                    button.btn.btn-danger.btn-sm.btn-delete(type="button" )
-                        | Delete
 
+
+
+    script(src="https://cdn.jsdelivr.net/npm/sweetalert2@11")
+    script.
+        document.addEventListener('DOMContentLoaded', function () {
+            const deleteButtons = document.querySelectorAll('.btn-delete');
+
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const pengajuanId = this.getAttribute('data-id');
+
+                    Swal.fire({
+                        title: 'Anda yakin?',
+                        text: "Anda akan menghapus pengajuan ini!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Ya, hapus!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch(`/mahasiswa/pengajuan/${pengajuanId}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({pengajuanId: pengajuanId})
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    console.log('Server Response:', data);
+                                    if (data.success) {
+                                        Swal.fire(
+                                            'Dihapus!',
+                                            'Pengajuan telah dihapus.',
+                                            'success'
+                                        ).then(() => {
+                                            location.reload();
+                                        });
+                                    } else {
+                                        Swal.fire(
+                                            'Gagal!',
+                                            data.message || 'Pengajuan gagal dihapus.',
+                                            'error'
+                                        );
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    Swal.fire(
+                                        'Gagal!',
+                                        'Terjadi kesalahan saat menghapus pengajuan.',
+                                        'error'
+                                    );
+                                });
+                        }
+                    });
+                });
+            });
+        });
