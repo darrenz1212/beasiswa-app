@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const mahasiswaController = require('../controllers/mahasiswaController'); // Pastikan jalur relatif benar
+const mahasiswaController = require('../controllers/mahasiswaController');
+const { requireAuth } = require('../middleware/auth');
 
-router.get('/', mahasiswaController.index);
-router.get('/show-mhsw', mahasiswaController.getMahasiswa);
-router.get('/:nrp', mahasiswaController.getMahasiswaById);
-router.post('/:userID', mahasiswaController.addMahasiswa);
-router.put('/:nrp', mahasiswaController.updateMahasiswa);
-router.delete('/:nrp', mahasiswaController.deleteMahasiswa);
+// Mahasiswa index
+router.get('/', requireAuth, mahasiswaController.index);
+router.get('/timeline',requireAuth,mahasiswaController.timeline)
+router.get('/pengajuan',requireAuth,mahasiswaController.showPendaftaran)
+router.get('/history',requireAuth,mahasiswaController.history)
 
 module.exports = router;
