@@ -21,7 +21,10 @@ const login = async (req, res) => {
                 res.redirect('/admin');
             } else if (user.role === 'mahasiswa') {
                 res.redirect('/mahasiswa');
-            } else {
+            } else if(user.role === 'program_studi'){
+                res.redirect('/prodi')
+            }
+            else {
                 res.redirect('/');
             }
         } else {
