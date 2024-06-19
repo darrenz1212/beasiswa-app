@@ -8,6 +8,7 @@ const { sequelize } = require('./models');
 const mahasiswaRoutes = require('./routes/mahasiswaRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const authRoutes = require('./routes/authRoutes');
+const prodiRoutes = require('./routes/prodiRoutes')
 const { requireAuth } = require('./middleware/auth');
 
 const app = express();
@@ -38,7 +39,8 @@ sequelize.sync()
 // Register routes
 app.use('/auth', authRoutes);
 app.use('/admin', requireAuth, adminRoutes);
-app.use('/mahasiswa', requireAuth, mahasiswaRoutes); 
+app.use('/mahasiswa', requireAuth, mahasiswaRoutes);
+app.use('/prodi',requireAuth,prodiRoutes)
 
 app.get('/', (req, res) => {
     res.redirect('/auth/login');
