@@ -55,13 +55,15 @@ const timeline = async (req, res) => {
 const showPendaftaran = async (req, res) => {
     try {
         const user = req.session.user_id;
-
         const timelines = await JenisBeasiswa.findAll({
             include: [{
                 model: PeriodePengajuan,
-                attributes: ['periode_id', 'nama_periode'],
-                required: true
-            }]
+                attributes: ['periode_id', 'nama_periode','status'],
+                required: true,
+                where : {
+                    'status' : true
+                }
+            }],
         });
 
         const beasiswaDetail = timelines.map(t => ({
