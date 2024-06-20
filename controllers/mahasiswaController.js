@@ -8,7 +8,9 @@ const multer = require('multer');
 
 const index = async (req, res) => {
     try {
+        const username = req.session.username; // Ambil username dari sesi
         const mahasiswaList = await Mahasiswa.findAll();
+        
         const result = mahasiswaList.map(m => ({
             nrp: m.nrp,
             user_id: m.user_id,
@@ -17,8 +19,8 @@ const index = async (req, res) => {
             ipk: m.ipk_terakhir,
             status: m.status_aktif ? 'Aktif' : 'Tidak Aktif'
         }));
-        console.log(req.session.user_id)
-        res.render('mahasiswa/index', { mahasiswa: result, user : req.session.user_id });
+
+        res.render('mahasiswa/index', { mahasiswa: result, username }); // Kirim username ke template
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

@@ -5,6 +5,10 @@ const getSession = async () => {
     return PengajuanBeasiswa;
 };
 
+const index = (req, res) => {
+    res.render('fakultas/index', { username: req.session.username || 'User' });
+};
+
 const createResponse = (data, status = 200) => {
     return { data, status };
 };
@@ -22,7 +26,8 @@ const getAllPengajuan = async (req, res) => {
             status_pengajuan_fakultas: p.status_pengajuan_fakultas,
             dokumen_pengajuan: p.dokumen_pengajuan
         }));
-        res.status(200).json(createResponse({ pengajuan: result }));
+        res.render('fakultas/showPengajuan',{pengajuan:result})
+        // res.send(result)
     } catch (error) {
         res.status(500).json(createResponse({ message: error.message }));
     }
@@ -89,5 +94,6 @@ module.exports = {
     getAllPengajuan,
     getApprovedByProdiPengajuan,
     approvePengajuan,
-    declinePengajuan
+    declinePengajuan,
+    index
 };
