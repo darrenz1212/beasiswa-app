@@ -1,10 +1,12 @@
 const { User, Mahasiswa } = require('../models');
 const bcrypt = require('bcrypt');
 
+// Admin index
 const index = async (req, res) => {
     res.render('admin/index', { message: "Admin Site" });
 };
 
+// Get all users
 const getUser = async (req, res) => {
     try {
         const userList = await User.findAll();
@@ -21,6 +23,7 @@ const getUser = async (req, res) => {
     }
 };
 
+// Get user by ID
 const getUserById = async (req, res) => {
     try {
         const { userID } = req.params;
@@ -44,6 +47,7 @@ const getUserById = async (req, res) => {
     }
 };
 
+// Add new user
 const addUser = async (req, res) => {
     try {
         const { username, password, role, program_studi_id, fakultas_id } = req.body;
@@ -63,22 +67,26 @@ const addUser = async (req, res) => {
     }
 };
 
+// Update user
 const updateUser = async (req, res) => {
     try {
-        const { user_id, username, role, program_studi_id, fakultas_id } = req.body;
+        const { userID } = req.params;
+        const { username, role, program_studi_id, fakultas_id } = req.body;
         await User.update(
             { username, role, program_studi_id, fakultas_id },
-            { where: { user_id } }
+            { where: { user_id: userID } }
         );
-        res.redirect('/admin/users');
+        res.json({ message: 'User updated successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
+// Delete user
 const deleteUser = async (req, res) => {
     try {
         const { userID } = req.params;
+
         const user = await User.findOne({ where: { user_id: userID } });
 
         if (!user) {
@@ -92,17 +100,7 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = {
-    index,
-    getUser,
-    getUserById,
-    addUser,
-    updateUser,
-    deleteUser,
-};
-
-
-// =========================================================== Mahasiswa ===========================================================
+// Mahasiswa operations
 const getMahasiswa = async (req, res) => {
     try {
         const mahasiswaList = await Mahasiswa.findAll();

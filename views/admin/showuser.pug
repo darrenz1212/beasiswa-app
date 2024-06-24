@@ -167,9 +167,9 @@ block custom-css
 block web-content
   .card.shadow.mb-4
     .card-header.py-3
-      h6.m-0.font-weight-bold.text-primary Daftar User
+      h1.m-0.font-weight-bold.text-primary Daftar User
       // Tombol untuk Add User
-      button.btn.btn-primary(type="button", onclick="showAddUserModal()") Add User
+      a.btn.btn-primary(href="#", onclick="showAddUserModal()") Add User
 
     .card-body
       .table-responsive
@@ -191,9 +191,9 @@ block web-content
                 td= m.program_studi_id
                 td= m.fakultas_id
                 td
-                 button.btn.btn-success.btn-sm.btn-edit(type="button", data-id=m.user_id, data-toggle="modal", data-target="#editUserModal")
+                  button.btn.btn-success.btn-sm.btn-edit(type="button", data-id=m.user_id, data-toggle="modal", data-target="#editUserModal")
                     i.fas.fa-edit
-                 button.btn.btn-sm.btn-danger.mx-1(type="button", onclick=`deleteUser(${m.user_id})`)
+                  button.btn.btn-sm.btn-danger.mx-1(type="button", data-id=m.user_id, onclick=`deleteUser(${m.user_id})`)
                     i.fas.fa-trash
 
     // Modal Add User
@@ -215,7 +215,7 @@ block web-content
               .form-group
                 label(for="addRole") Role
                 select#addRole.form-control(name="role", required)
-                  option(value="admin") Admin
+                  option(value="administrator") Admin
                   option(value="mahasiswa") Mahasiswa
                   option(value="program_studi") Program Studi
               .form-group
@@ -226,145 +226,180 @@ block web-content
                 input#addFakultas.form-control(type="text", name="fakultas_id")
           .modal-footer
             button.btn.btn-secondary(type="button", data-dismiss="modal") Close
-            button.btn.btn-primary(type="submit") Add User
+            a.btn.btn-primary#addUser Save changes
 
-    // Modal Update
-    // Modal Update
-    .modal.fade#editUserModal(tabindex="-1", role="dialog", aria-labelledby="editUserModalLabel", aria-hidden="true")
-        .modal-dialog(role="document")
-            .modal-content
-                .modal-header
-                    h5.modal-title#updateUserModalLabel Update User
-                    button(type="button", class="close", data-dismiss="modal", aria-label="Close")
-                    span(aria-hidden="true") &times;
-                .modal-body
-                    form#updateUserForm
-                        label(for="nama_mahasiswa") Nama user
-                        input#nama_user.form-control(type="text", name="user_id",    required)
-                        
-                        
-                        .form-group
-                            label(for="updateUsername") Username
-                            input#updateUsername.form-control(type="text", name="username", required)
-                        .form-group
-                            label(for="updateRole") Role
-                            select#updateRole.form-control(name="role", required)
-                                option(value="administrator") Admin
-                                option(value="mahasiswa") Mahasiswa
-                                option(value="program_studi") Program Studi
-                        .form-group
-                            label(for="updateProdi") Program Studi
-                            input#updateProdi.form-control(type="text", name="program_studi_id")
-                        .form-group
-                            label(for="updateFakultas") Fakultas
-                            input#updateFakultas.form-control(type="text", name="fakultas_id")
-                        .modal-footer
-                            button.btn.btn-secondary(type="button", data-dismiss="modal") Close
-                            button.btn.btn-primary(type="submit") Save changes
+  // Modal Update User
+  .modal.fade#editUserModal(tabindex="-1", role="dialog", aria-labelledby="editUserModalLabel", aria-hidden="true")
+    .modal-dialog(role="document")
+      .modal-content
+        .modal-header
+          h5.modal-title#editUserModalLabel Update User
+          button(type="button", class="close", data-dismiss="modal", aria-label="Close")
+            span(aria-hidden="true") &times;
+        .modal-body
+          form#updateUserForm(method="post")
+            input(type="hidden", name="user_id", id="updateUserId")
+            .form-group
+              label(for="currentUsername") Current Username
+              input#currentUsername.form-control(type="text", disabled)
+            .form-group
+              label(for="newUsername") New Username
+              input#newUsername.form-control(type="text", name="username", required)
+            .form-group
+              label(for="updateRole") Role
+              select#updateRole.form-control(name="role", required)
+                option(value="administrator") Admin
+                option(value="mahasiswa") Mahasiswa
+                option(value="program_studi") Program Studi
+            .form-group
+              label(for="updateProdi") Program Studi
+              input#updateProdi.form-control(type="text", name="program_studi_id")
+            .form-group
+              label(for="updateFakultas") Fakultas
+              input#updateFakultas.form-control(type="text", name="fakultas_id")
+        .modal-footer
+          button.btn.btn-secondary(type="button", data-dismiss="modal") Close
+          a.btn.btn-primary#saveChanges Save changes
 
-            
   script(src="https://cdn.jsdelivr.net/npm/sweetalert2@11")
   script.
     document.addEventListener('DOMContentLoaded', function() {
-    function deleteUser(userId) {
+      // Function to delete user
+      function deleteUser(userId) {
         Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
-        if (result.isConfirmed) {
+          if (result.isConfirmed) {
             fetch(`/admin/users/delete/${userId}`, { method: 'DELETE' })
-            .then(response => {
+              .then(response => {
                 if (response.ok) {
-                Swal.fire(
+                  Swal.fire(
                     'Deleted!',
                     'User has been deleted.',
                     'success'
-                );
-                location.reload();
+                  );
+                  location.reload();
                 } else {
-                Swal.fire(
+                  Swal.fire(
                     'Error!',
                     'There was a problem deleting the user.',
                     'error'
-                );
+                  );
                 }
-            });
-        }
+              }).catch(error => {
+                Swal.fire(
+                  'Error!',
+                  'There was a problem deleting the user.',
+                  'error'
+                );
+              });
+          }
         });
-    }});
+      }
 
-    document.addEventListener('DOMContentLoaded', function() {
-    // Function to show update modal and populate it with user data
-    function showUpdateModal(userId) {
+      // Attach delete event listeners
+      const deleteButtons = document.querySelectorAll('.btn-danger');
+      deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const userId = this.getAttribute('data-id');
+          deleteUser(userId);
+        });
+      });
+
+      // Function to show update modal and populate it with user data
+      function showUpdateModal(userId) {
         fetch(`/admin/users/${userId}`)
-        .then(response => response.json())
-        .then(data => {
+          .then(response => response.json())
+          .then(data => {
             document.getElementById('updateUserId').value = data.user.user_id;
-            document.getElementById('updateUsername').value = data.user.username;
+            document.getElementById('currentUsername').value = data.user.username; // Add current username field
+            document.getElementById('newUsername').value = data.user.username;
             document.getElementById('updateRole').value = data.user.role;
             document.getElementById('updateProdi').value = data.user.program_studi_id;
             document.getElementById('updateFakultas').value = data.user.fakultas_id;
-            $('#updateUserModal').modal('show');
-        })
-        .catch(error => console.error('Error fetching user data:', error));
-    }
+            $('#editUserModal').modal('show');
+          })
+          .catch(error => console.error('Error fetching user data:', error));
+      }
 
-    // Attach event listener to the form submit
-    document.getElementById('updateUserForm').addEventListener('submit', function (e) {
-        e.preventDefault(); // Prevent default form submission
+      // Attach event listener to the save changes button
+      document.getElementById('saveChanges').addEventListener('click', function (e) {
+        e.preventDefault(); // Prevent default link action
 
         const userId = document.getElementById('updateUserId').value;
         const payload = {
-        user_id: userId,
-        username: document.getElementById('updateUsername').value,
-        role: document.getElementById('updateRole').value,
-        program_studi_id: document.getElementById('updateProdi').value,
-        fakultas_id: document.getElementById('updateFakultas').value
+          user_id: userId,
+          username: document.getElementById('newUsername').value,
+          role: document.getElementById('updateRole').value,
+          program_studi_id: document.getElementById('updateProdi').value,
+          fakultas_id: document.getElementById('updateFakultas').value
         };
 
         fetch(`/admin/users/update/${userId}`, {
-        method: 'PUT',
-        headers: {
+          method: 'PUT',
+          headers: {
             'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
+          },
+          body: JSON.stringify(payload)
         })
         .then(response => response.json())
         .then(data => {
-            if (data.message && data.message.includes('updated successfully')) {
+          if (data.message && data.message.includes('updated successfully')) {
             Swal.fire(
-                'Berhasil!',
-                'Data user telah diperbarui.',
-                'success'
+              'Berhasil!',
+              'Data user telah diperbarui.',
+              'success'
             ).then(() => {
-                $('#updateUserModal').modal('hide');
-                location.reload(); // Reload page to reflect changes
+              $('#editUserModal').modal('hide');
+              location.reload(); // Reload page to reflect changes
             });
-            } else {
+          } else {
             Swal.fire(
-                'Gagal!',
-                'Gagal memperbarui data user.',
-                'error'
+              'Gagal!',
+              'Gagal memperbarui data user.',
+              'error'
             );
-            }
+          }
         })
         .catch(error => {
-            console.error('Error updating user:', error);
-            Swal.fire(
+          console.error('Error updating user:', error);
+          Swal.fire(
             'Gagal!',
             'Terjadi kesalahan saat memperbarui data.',
             'error'
-            );
+          );
         });
-    });
+      });
 
-    // Function to show add user modal
-    function showAddUserModal() {
+      // Function to show add user modal
+      function showAddUserModal() {
         $('#addUserModal').modal('show');
-    }
+      }
+
+      // Attach event listeners to edit buttons
+      const editButtons = document.querySelectorAll('.btn-edit');
+      editButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const userId = this.getAttribute('data-id');
+          showUpdateModal(userId);
+        });
+      });
+
+      // Attach event listener to add user button
+      document.querySelector('a[onclick="showAddUserModal()"]').addEventListener('click', function(e) {
+        e.preventDefault(); // Prevent default link action
+        showAddUserModal();
+      });
+
+      // Attach event listener to add user modal save button
+      document.getElementById('addUser').addEventListener('click', function (e) {
+        e.preventDefault(); // Prevent default link action
+        document.getElementById('addUserForm').submit();
+      });
     });
