@@ -35,12 +35,15 @@ block sidebar
             a.collapse-item(href="/mahasiswa/pengajuan") Pendaftaran
             a.collapse-item(href="/mahasiswa/history") Riwayat Pengajuan
 
-
 block top-bar
   nav.navbar.navbar-expand.navbar-light.bg-white.topbar.mb-4.static-top.shadow
     // Sidebar Toggle (Topbar)
     button#sidebarToggleTop.btn.btn-link.d-md-none.rounded-circle.mr-3
       i.fa.fa-bars
+
+    // Greeting Message
+    span.navbar-text.ml-auto
+      | Halo #{username}
 
     // Topbar Search
     form.d-none.d-sm-inline-block.form-inline.mr-auto.ml-md-3.my-2.my-md-0.mw-100.navbar-search
@@ -141,7 +144,7 @@ block top-bar
       // Nav Item - User Information
       li.nav-item.dropdown.no-arrow
         a.nav-link.dropdown-toggle(href="#", id="userDropdown", role="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false")
-          span.mr-2.d-none.d-lg-inline.text-gray-600.small Douglas McGee
+          span.mr-2.d-none.d-lg-inline.text-gray-600.small #{username}
           img.img-profile.rounded-circle(src="/img/undraw_profile.svg")
         // Dropdown - User Information
         .dropdown-menu.dropdown-menu-right.shadow.animated--grow-in(aria-labelledby="userDropdown")
@@ -160,22 +163,22 @@ block top-bar
             | Logout
 
 block web-content
-          h1.h4.text-gray-900.mb-4 Mahasiswa List
-          table.table
-            thead
-              tr
-                th NRP
-                th User ID
-                th Nama Mahasiswa
-                th Program Studi ID
-                th IPK Terakhir
-                th Status Aktif
-            tbody
-              each m in mahasiswa
-                tr
-                  td= m.nrp
-                  td= m.user_id
-                  td= m.nama_mahasiswa
-                  td= m.prodi
-                  td= m.ipk
-                  td= m.status
+  h1.h4.text-gray-900.mb-4 Mahasiswa List
+  table.table
+    thead
+      tr
+        th NRP
+        th User ID
+        th Nama Mahasiswa
+        th Program Studi ID
+        th IPK Terakhir
+        th Status Aktif
+    tbody
+      each m in mahasiswa
+        tr
+          td= m.nrp
+          td= m.user_id
+          td= m.nama_mahasiswa
+          td= m.prodi
+          td= m.ipk
+          td= m.status

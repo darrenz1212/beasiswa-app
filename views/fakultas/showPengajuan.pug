@@ -142,7 +142,7 @@ block top-bar
 block web-content
     h1 Pengajuan Beasiswa
 
-    if result && result.length
+    if pengajuan && pengajuan.length
         table.table.table-bordered.table-hover
             thead
                 tr
@@ -157,28 +157,31 @@ block web-content
                     th Action
                     th Detail Mahasiswa
             tbody
-                each pengajuan in result
+                each p in pengajuan
                     tr
-                        td= pengajuan.pengajuan_id
-                        td= pengajuan.nrp
-                        td= pengajuan.beasiswa_id
-                        td= pengajuan.periode_id
-                        td= pengajuan.tanggal_pengajuan
-                        td= pengajuan.status_pengajuan
-                        td= pengajuan.status_pengajuan_fakultas
+                        td= p.pengajuan_id
+                        td= p.nrp
+                        td= p.nama_mahasiswa
+                        td= p.periode_id
+                        td= p.tanggal_pengajuan
+                        td= p.status_pengajuan
+                        td= p.status_pengajuan_fakultas
                         td
                             a(href=`/prodi/download/${pengajuan.dokumen_pengajuan}`) Download
                         td
-                            button.btn.btn-success.btn-sm(data-toggle="modal", data-target=`#confirmApproveModal${pengajuan.pengajuan_id}`) Approved
-                            button.btn.btn-danger.btn-sm(data-toggle="modal", data-target=`#confirmDeclineModal${pengajuan.pengajuan_id}`) Declined
+                            if p.status_pengajuan == 'Disetujui Prodi'
+                                button.btn.btn-success.btn-sm(data-toggle="modal", data-target=`#confirmApproveModal${p.pengajuan_id}`) Approved
+                                button.btn.btn-danger.btn-sm(data-toggle="modal", data-target=`#confirmDeclineModal${p.pengajuan_id}`) Declined
+                            else
+                                p Belum Disetujui Prodi
                         td
-                            button.btn.btn-info.btn-sm(data-toggle="modal", data-target=`#mahasiswaDetailModal${pengajuan.nrp}`) Lihat Detail
+                            button.btn.btn-info.btn-sm(data-toggle="modal", data-target=`#mahasiswaDetailModal${p.nrp}`) Lihat Detail
 
     else
         p Tidak ada data pengajuan yang ditemukan.
 
-    each pengajuan in result
-        .modal.fade(id=`mahasiswaDetailModal${pengajuan.nrp}`, tabindex="-1", role="dialog", aria-labelledby="exampleModalLabel", aria-hidden="true")
+    each p in pengajuan
+        .modal.fade(id=`mahasiswaDetailModal${p.nrp}`, tabindex="-1", role="dialog", aria-labelledby="exampleModalLabel", aria-hidden="true")
             .modal-dialog(role="document")
                 .modal-content
                     .modal-header
@@ -188,20 +191,20 @@ block web-content
                     .modal-body
                         dl
                             dt NRP
-                            dd= pengajuan.nrp
+                            dd= p.nrp
                             dt Nama
-                            dd= pengajuan.nama_mahasiswa
+                            dd= p.nama_mahasiswa
                             dt Program Studi ID
-                            dd= pengajuan.program_studi_id
+                            dd= p.program_studi_id
                             dt IPK Terakhir
-                            dd= pengajuan.ipk_terakhir
+                            dd= p.ipk_terakhir
                             dt Status Aktif
-                            dd= pengajuan.status_aktif
+                            dd= p.status_aktif
                     .modal-footer
                         button.btn.btn-secondary(type="button", data-dismiss="modal") Close
 
-    each pengajuan in result
-        .modal.fade(id=`confirmApproveModal${pengajuan.pengajuan_id}`, tabindex="-1", role="dialog", aria-labelledby="approveModalLabel", aria-hidden="true")
+    each p in pengajuan
+        .modal.fade(id=`confirmApproveModal${p.pengajuan_id}`, tabindex="-1", role="dialog", aria-labelledby="approveModalLabel", aria-hidden="true")
             .modal-dialog(role="document")
                 .modal-content
                     .modal-header
@@ -209,14 +212,13 @@ block web-content
                         button.close(type="button", data-dismiss="modal", aria-label="Close")
                             span(aria-hidden="true") &times;
                     .modal-body
-                        p Apakah Anda yakin ingin menyetujui pengajuan dengan ID #{pengajuan.pengajuan_id}?
+                        p Apakah Anda yakin ingin menyetujui pengajuan dengan ID #{p.pengajuan_id}?
                     .modal-footer
                         button.btn.btn-secondary(type="button", data-dismiss="modal") Cancel
-                        form(action=`/prodi/pengajuan/approve/${pengajuan.pengajuan_id}`, method="post")
+                        form(action=`/fakultas/pengajuan/approve/${p.pengajuan_id}`, method="post")
                             button.btn.btn-success(type="submit") Confirm Approved
-
-    each pengajuan in result
-        .modal.fade(id=`confirmDeclineModal${pengajuan.pengajuan_id}`, tabindex="-1", role="dialog", aria-labelledby="declineModalLabel", aria-hidden="true")
+    each p in pengajuan
+        .modal.fade(id=`confirmDeclineModal${p.pengajuan_id}`, tabindex="-1", role="dialog", aria-labelledby="declineModalLabel", aria-hidden="true")
             .modal-dialog(role="document")
                 .modal-content
                     .modal-header
@@ -224,11 +226,12 @@ block web-content
                         button.close(type="button", data-dismiss="modal", aria-label="Close")
                             span(aria-hidden="true") &times;
                     .modal-body
-                        p Apakah Anda yakin ingin menolak pengajuan dengan ID #{pengajuan.pengajuan_id}?
+                        p Apakah Anda yakin ingin menolak pengajuan dengan ID #{p.pengajuan_id}?
                     .modal-footer
                         button.btn.btn-secondary(type="button", data-dismiss="modal") Cancel
-                        form(action=`/prodi/pengajuan/decline/${pengajuan.pengajuan_id}`, method="post")
+                        form(action=`/fakultas/pengajuan/decline/${p.pengajuan_id}`, method="post")
                             button.btn.btn-danger(type="submit") Confirm Declined
+
 
     // Modal Konfirmasi Setelah Tindakan
     .modal.fade(id="actionConfirmationModal", tabindex="-1", role="dialog", aria-labelledby="actionConfirmationModalLabel", aria-hidden="true")
@@ -247,7 +250,7 @@ block web-content
                     button.btn.btn-secondary(type="button", data-dismiss="modal") Close
 
     script.
-        document.addEventListener("DOMContentLoaded", function() {
+        script.document.addEventListener("DOMContentLoaded", function () {
             const urlParams = new URLSearchParams(window.location.search);
             const status = urlParams.get('status');
             const pengajuan_id = urlParams.get('pengajuan_id');
@@ -262,3 +265,101 @@ block web-content
                 modal.show();
             }
         });
+
+
+        // function approvePengajuan(pengajuanId) {
+        //     Swal.fire({
+        //         title: 'Are you sure?',
+        //         text: "You want to approve this pengajuan?",
+        //         icon: 'warning',
+        //         showCancelButton: true,
+        //         confirmButtonColor: '#3085d6',
+        //         cancelButtonColor: '#d33',
+        //         confirmButtonText: 'Yes, approve it!'
+        //     }).then((result) => {
+        //         if (result.isConfirmed) {
+        //             fetch(`/fakultas/pengajuan/approve/${pengajuanId}`, {
+        //                 method: 'POST',
+        //                 headers: {
+        //                     'Content-Type': 'application/json'
+        //                 },
+        //                 body: JSON.stringify({ pengajuan_id: pengajuanId })
+        //             })
+        //             .then(response => response.json())
+        //             .then(data => {
+        //                 if (data.status === 200) {
+        //                     Swal.fire(
+        //                         'Approved!',
+        //                         'Pengajuan has been approved.',
+        //                         'success'
+        //                     ).then(() => {
+        //                         location.reload();
+        //                     });
+        //                 } else {
+        //                     Swal.fire(
+        //                         'Error!',
+        //                         data.message,
+        //                         'error'
+        //                     );
+        //                 }
+        //             })
+        //             .catch(error => {
+        //                 console.error('Error:', error);
+        //                 Swal.fire(
+        //                     'Error!',
+        //                     'An error occurred while approving the pengajuan.',
+        //                     'error'
+        //                 );
+        //             });
+        //         }
+        //     });
+        // }
+        //
+        // function declinePengajuan(pengajuanId) {
+        //     Swal.fire({
+        //         title: 'Are you sure?',
+        //         text: "You want to decline this pengajuan?",
+        //         icon: 'warning',
+        //         showCancelButton: true,
+        //         confirmButtonColor: '#3085d6',
+        //         cancelButtonColor: '#d33',
+        //         confirmButtonText: 'Yes, decline it!'
+        //     }).then((result) => {
+        //         if (result.isConfirmed) {
+        //             fetch(`/fakultas/pengajuan/decline/${pengajuanId}`, {
+        //                 method: 'POST',
+        //                 headers: {
+        //                     'Content-Type': 'application/json'
+        //                 },
+        //                 body: JSON.stringify({ pengajuan_id: pengajuanId })
+        //             })
+        //             .then(response => response.json())
+        //             .then(data => {
+        //                 if (data.status === 200) {
+        //                     Swal.fire(
+        //                         'Declined!',
+        //                         'Pengajuan has been declined.',
+        //                         'success'
+        //                     ).then(() => {
+        //                         location.reload();
+        //                     });
+        //                 } else {
+        //                     Swal.fire(
+        //                         'Error!',
+        //                         data.message,
+        //                         'error'
+        //                     );
+        //                 }
+        //             })
+        //             .catch(error => {
+        //                 console.error('Error:', error);
+        //                 Swal.fire(
+        //                     'Error!',
+        //                     'An error occurred while declining the pengajuan.',
+        //                     'error'
+        //                 );
+        //             });
+        //         }
+        //     });
+        // }
+        //

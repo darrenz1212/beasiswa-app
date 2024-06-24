@@ -182,8 +182,8 @@ block web-content
                     td= result.prodi
                     td= result.ipk
                     td= result.periode
-                    td Diajukan
-                    td Diajukan
+                    td= result.status_prodi
+                    td= result.status_fakultas
                     td
                         button.btn.btn-danger.btn-sm.btn-delete(type="button", data-id=result.pengajuanId) Delete
     else

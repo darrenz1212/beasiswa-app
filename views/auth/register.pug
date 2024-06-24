@@ -39,14 +39,21 @@ html(lang="en")
                       input.form-control.form-control-user(type="password" name="password" id="exampleInputPassword" placeholder="Password")
                     .col-sm-6
                       input.form-control.form-control-user(type="password" name="repeat_password" id="exampleRepeatPassword" placeholder="Repeat Password")
-                  .form-group
-                    input.form-control.form-control-user(type="text" name="role" id="role" placeholder="Role")
-                  .form-group
-                    input.form-control.form-control-user(type="text" name="program_studi_id" id="program_studi_id" placeholder="Program Studi ID")
-                  .form-group
-                    input.form-control.form-control-user(type="text" name="fakultas_id" id="fakultas_id" placeholder="Fakultas ID")
-                  button.btn.btn-primary.btn-user.btn-block(type="submit") Register Account
+                  select.form-control(name="role" required)
+                    option(value="program_studi") Program Studi
+                    option(value="mahasiswa") Mahasiswa
+                    option(value="fakultas") Fakultas
+
+                  select.form-control(name="program_studi_id" required)
+                    option(value="1") Teknik Informatika
+                    //option(value="mahasiswa") Mahasiswa
+                    //option(value="fakultas") Fakultas
+
+                  select.form-control(name="fakultas_id" required)
+                    option(value="1") Informasi Teknologi
                   hr
+                  .col-4
+                    button.btn.btn-primary.btn-block(type="submit") Register
                   a.btn.btn-google.btn-user.btn-block(href="/auth/register")
                     i.fab.fa-google.fa-fw
                     | Register with Google

@@ -233,7 +233,9 @@ const history = async (req,res) =>{
                 nama : mhswData.nama_mahasiswa,
                 prodi : mhswData.ProgramStudi.nama_program_studi,
                 ipk : mhswData.ipk_terakhir,
-                periode : timelines.PeriodePengajuan.nama_periode
+                periode : timelines.PeriodePengajuan.nama_periode,
+                status_prodi : history.status_pengajuan,
+                status_fakultas : history.status_pengajuan_fakultas
 
 
             }
