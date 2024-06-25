@@ -1,9 +1,17 @@
 const { User, Mahasiswa } = require('../models');
+const { Fakultas, ProgramStudi } = require('../models');
 const bcrypt = require('bcrypt');
 
 // Admin index
 const index = async (req, res) => {
-    res.render('admin/index', { message: "Admin Site" });
+    try {
+        const fakultasList = await Fakultas.findAll();
+        const programStudiList = await ProgramStudi.findAll();
+        
+        res.render('admin/index', { fakultas: fakultasList, programStudi: programStudiList });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 };
 
 // Get all users
@@ -214,6 +222,26 @@ const deleteMahasiswa = async (req, res) => {
     }
 };
 
+const addFakultas = async (req, res) => {
+    try {
+        const { nama_fakultas } = req.body;
+        await Fakultas.create({ nama_fakultas });
+        res.redirect('/admin');
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+const addProgramStudi = async (req, res) => {
+    try {
+        const { nama_program_studi, fakultas_id } = req.body;
+        await ProgramStudi.create({ nama_program_studi, fakultas_id });
+        res.redirect('/admin');
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 module.exports = {
     index,
     getUser,
@@ -225,5 +253,7 @@ module.exports = {
     getMahasiswaById,
     addMahasiswa,
     updateMahasiswa,
-    deleteMahasiswa
+    deleteMahasiswa,
+    addFakultas,
+    addProgramStudi
 };
