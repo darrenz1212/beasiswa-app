@@ -1,12 +1,16 @@
 module.exports = (sequelize, DataTypes) => {
     const Fakultas = sequelize.define('Fakultas', {
-        fakultas_id :{
-            type : DataTypes.INTEGER,
-            primaryKey : true
+        fakultas_id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true
         },
-        nama_fakultas : DataTypes.STRING
+        nama_fakultas: {
+            type: DataTypes.STRING,
+            allowNull: false
+        }
     }, {
-        tableName: 'Fakultas',
+        tableName: 'fakultas',
         timestamps: false
     });
 

@@ -20,4 +20,7 @@ router.post('/mahasiswa', requireAuth, adminController.addMahasiswa);
 router.put('/mahasiswa/:nrp', requireAuth, adminController.updateMahasiswa);
 router.delete('/mahasiswa/:nrp', requireAuth, adminController.deleteMahasiswa);
 
+router.post('/fakultas', requireAuth, adminController.addFakultas);
+router.post('/program_studi', requireAuth, adminController.addProgramStudi);
+
 module.exports = router;
