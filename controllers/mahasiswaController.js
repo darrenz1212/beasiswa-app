@@ -8,7 +8,9 @@ const multer = require('multer');
 
 const index = async (req, res) => {
     try {
+        const username = req.session.username; // Ambil username dari sesi
         const mahasiswaList = await Mahasiswa.findAll();
+        
         const result = mahasiswaList.map(m => ({
             nrp: m.nrp,
             user_id: m.user_id,
@@ -17,8 +19,8 @@ const index = async (req, res) => {
             ipk: m.ipk_terakhir,
             status: m.status_aktif ? 'Aktif' : 'Tidak Aktif'
         }));
-        console.log(req.session.user_id)
-        res.render('mahasiswa/index', { mahasiswa: result, user : req.session.user_id });
+
+        res.render('mahasiswa/index', { mahasiswa: result, username }); // Kirim username ke template
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -55,13 +57,15 @@ const timeline = async (req, res) => {
 const showPendaftaran = async (req, res) => {
     try {
         const user = req.session.user_id;
-
         const timelines = await JenisBeasiswa.findAll({
             include: [{
                 model: PeriodePengajuan,
-                attributes: ['periode_id', 'nama_periode'],
-                required: true
-            }]
+                attributes: ['periode_id', 'nama_periode','status'],
+                required: true,
+                where : {
+                    'status' : true
+                }
+            }],
         });
 
         const beasiswaDetail = timelines.map(t => ({
@@ -229,7 +233,9 @@ const history = async (req,res) =>{
                 nama : mhswData.nama_mahasiswa,
                 prodi : mhswData.ProgramStudi.nama_program_studi,
                 ipk : mhswData.ipk_terakhir,
-                periode : timelines.PeriodePengajuan.nama_periode
+                periode : timelines.PeriodePengajuan.nama_periode,
+                status_prodi : history.status_pengajuan,
+                status_fakultas : history.status_pengajuan_fakultas
 
 
             }

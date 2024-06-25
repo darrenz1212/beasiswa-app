@@ -1,28 +1,37 @@
 const { User, Mahasiswa } = require('../models');
+const { Fakultas, ProgramStudi } = require('../models');
 const bcrypt = require('bcrypt');
 
+// Admin index
 const index = async (req, res) => {
-    res.render('admin/index', { message: "Admin Site" });
+    try {
+        const fakultasList = await Fakultas.findAll();
+        const programStudiList = await ProgramStudi.findAll();
+        
+        res.render('admin/index', { fakultas: fakultasList, programStudi: programStudiList });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 };
 
+// Get all users
 const getUser = async (req, res) => {
     try {
         const userList = await User.findAll();
         const result = userList.map(u => ({
             user_id: u.user_id,
             username: u.username,
-            password: u.password,
             role: u.role,
             program_studi_id: u.program_studi_id,
             fakultas_id: u.fakultas_id
         }));
-        console.log((result))
         res.render('admin/showuser', { user: result });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
+// Get user by ID
 const getUserById = async (req, res) => {
     try {
         const { userID } = req.params;
@@ -46,50 +55,42 @@ const getUserById = async (req, res) => {
     }
 };
 
+// Add new user
 const addUser = async (req, res) => {
     try {
-        const data = req.body;
-        const hashed_password = bcrypt.hashSync(data.password, 10);
+        const { username, password, role, program_studi_id, fakultas_id } = req.body;
+        const hashedPassword = bcrypt.hashSync(password, 10);
 
-        const newUser = await User.create({
-            user_id: data.user_id,
-            username: data.username,
-            password: hashed_password,
-            role: data.role,
-            program_studi_id: data.program_studi_id,
-            fakultas_id: data.fakultas_id
+        await User.create({
+            username,
+            password: hashedPassword,
+            role,
+            program_studi_id,
+            fakultas_id
         });
 
-        res.json({ message: 'User added successfully' });
+        res.redirect('/admin/users');
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
+// Update user
 const updateUser = async (req, res) => {
     try {
         const { userID } = req.params;
-        const data = req.body;
-
-        const user = await User.findOne({ where: { user_id: userID } });
-
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        user.username = data.username || user.username;
-        user.password = data.password ? bcrypt.hashSync(data.password, 10) : user.password;
-        user.role = data.role || user.role;
-        user.program_studi_id = data.program_studi_id || user.program_studi_id;
-        user.fakultas_id = data.fakultas_id || user.fakultas_id;
-
-        await user.save();
+        const { username, role, program_studi_id, fakultas_id } = req.body;
+        await User.update(
+            { username, role, program_studi_id, fakultas_id },
+            { where: { user_id: userID } }
+        );
         res.json({ message: 'User updated successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
+// Delete user
 const deleteUser = async (req, res) => {
     try {
         const { userID } = req.params;
@@ -107,7 +108,7 @@ const deleteUser = async (req, res) => {
     }
 };
 
-// =========================================================== Mahasiswa ===========================================================
+// Mahasiswa operations
 const getMahasiswa = async (req, res) => {
     try {
         const mahasiswaList = await Mahasiswa.findAll();
@@ -221,6 +222,26 @@ const deleteMahasiswa = async (req, res) => {
     }
 };
 
+const addFakultas = async (req, res) => {
+    try {
+        const { nama_fakultas } = req.body;
+        await Fakultas.create({ nama_fakultas });
+        res.redirect('/admin');
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+const addProgramStudi = async (req, res) => {
+    try {
+        const { nama_program_studi, fakultas_id } = req.body;
+        await ProgramStudi.create({ nama_program_studi, fakultas_id });
+        res.redirect('/admin');
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 module.exports = {
     index,
     getUser,
@@ -232,5 +253,7 @@ module.exports = {
     getMahasiswaById,
     addMahasiswa,
     updateMahasiswa,
-    deleteMahasiswa
+    deleteMahasiswa,
+    addFakultas,
+    addProgramStudi
 };

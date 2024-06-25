@@ -2,28 +2,22 @@ extends ../layout/master
 
 block sidebar
     ul.navbar-nav.bg-gradient-primary.sidebar.sidebar-dark.accordion(id="accordionSidebar")
-        // Sidebar - Brand
         a.sidebar-brand.d-flex.align-items-center.justify-content-center(href="index.html")
             .sidebar-brand-icon.rotate-n-15
                 i.fas.fa-laugh-wink
             .sidebar-brand-text.mx-3 SB Admin sup 2
 
-        // Divider
         hr.sidebar-divider.my-0
 
-        // Nav Item - Dashboard
         li.nav-item.active
             a.nav-link(href="index.html")
                 i.fas.fa-fw.fa-tachometer-alt
                 span Dashboard
 
-        // Divider
         hr.sidebar-divider
 
-        // Heading
         .sidebar-heading Interface
 
-        // Nav Item - Pages Collapse Menu
         li.nav-item
             a.nav-link.collapsed(href="#", data-toggle="collapse", data-target="#collapseTwo", aria-expanded="true", aria-controls="collapseTwo")
                 i.fas.fa-fw.fa-cog
@@ -31,18 +25,13 @@ block sidebar
             #collapseTwo.collapse(aria-labelledby="headingTwo", data-parent="#accordionSidebar")
                 .bg-white.py-2.collapse-inner.rounded
                     h6.collapse-header Beasiswa :
-                    a.collapse-item(href="/mahasiswa/timeline") Timeline Beasiswa
-                    a.collapse-item(href="/mahasiswa/pengajuan") Pendaftaran
-                    a.collapse-item(href="/mahasiswa/history") Riwayat Pengajuan
-
-
+                    a.collapse-item(href="/prodi/pengajuan") Lihat Pengajuan
+                    a.collapse-item(href="/prodi/periode") Pengadaan Periode
 block top-bar
     nav.navbar.navbar-expand.navbar-light.bg-white.topbar.mb-4.static-top.shadow
-        // Sidebar Toggle (Topbar)
         button#sidebarToggleTop.btn.btn-link.d-md-none.rounded-circle.mr-3
             i.fa.fa-bars
 
-        // Topbar Search
         form.d-none.d-sm-inline-block.form-inline.mr-auto.ml-md-3.my-2.my-md-0.mw-100.navbar-search
             .input-group
                 input.form-control.bg-light.border-0.small(type="text", placeholder="Search for...", aria-label="Search", aria-describedby="basic-addon2")
@@ -50,13 +39,10 @@ block top-bar
                     button.btn.btn-primary(type="button")
                         i.fas.fa-search.fa-sm
 
-        // Topbar Navbar
         ul.navbar-nav.ml-auto
-            // Nav Item - Search Dropdown (Visible Only XS)
             li.nav-item.dropdown.no-arrow.d-sm-none
                 a.nav-link.dropdown-toggle(href="#", id="searchDropdown", role="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false")
                     i.fas.fa-search.fa-fw
-                // Dropdown - Messages
                 .dropdown-menu.dropdown-menu-right.p-3.shadow.animated--grow-in(aria-labelledby="searchDropdown")
                     form.form-inline.mr-auto.w-100.navbar-search
                         .input-group
@@ -65,13 +51,10 @@ block top-bar
                                 button.btn.btn-primary(type="button")
                                     i.fas.fa-search.fa-sm
 
-            // Nav Item - Alerts
             li.nav-item.dropdown.no-arrow.mx-1
                 a.nav-link.dropdown-toggle(href="#", id="alertsDropdown", role="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false")
                     i.fas.fa-bell.fa-fw
-                    // Counter - Alerts
                     span.badge.badge-danger.badge-counter 3+
-                // Dropdown - Alerts
                 .dropdown-list.dropdown-menu.dropdown-menu-right.shadow.animated--grow-in(aria-labelledby="alertsDropdown")
                     h6.dropdown-header Alerts Center
                     a.dropdown-item.d-flex.align-items-center(href="#")
@@ -97,13 +80,10 @@ block top-bar
                             | Spending Alert: We've noticed unusually high spending for your account.
                     a.dropdown-item.text-center.small.text-gray-500(href="#") Show All Alerts
 
-            // Nav Item - Messages
             li.nav-item.dropdown.no-arrow.mx-1
                 a.nav-link.dropdown-toggle(href="#", id="messagesDropdown", role="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false")
                     i.fas.fa-envelope.fa-fw
-                    // Counter - Messages
                     span.badge.badge-danger.badge-counter 7
-                // Dropdown - Messages
                 .dropdown-list.dropdown-menu.dropdown-menu-right.shadow.animated--grow-in(aria-labelledby="messagesDropdown")
                     h6.dropdown-header Message Center
                     a.dropdown-item.d-flex.align-items-center(href="#")
@@ -138,12 +118,10 @@ block top-bar
 
             .topbar-divider.d-none.d-sm-block
 
-            // Nav Item - User Information
             li.nav-item.dropdown.no-arrow
                 a.nav-link.dropdown-toggle(href="#", id="userDropdown", role="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false")
                     span.mr-2.d-none.d-lg-inline.text-gray-600.small Douglas McGee
                     img.img-profile.rounded-circle(src="/img/undraw_profile.svg")
-                // Dropdown - User Information
                 .dropdown-menu.dropdown-menu-right.shadow.animated--grow-in(aria-labelledby="userDropdown")
                     a.dropdown-item(href="#")
                         i.fas.fa-user.fa-sm.fa-fw.mr-2.text-gray-400
@@ -160,93 +138,125 @@ block top-bar
                         | Logout
 
 block web-content
-    h1.h4.text-gray-900.mb-4 History Beasiswa
-    if result != null
-        table.table
+    h1 Pengajuan Beasiswa
+
+    if result && result.length
+        table.table.table-bordered.table-hover
             thead
                 tr
-                    th Nama Beasiswa
+                    th Pengajuan ID
                     th NRP
-                    th Nama Mahasiswa
-                    th Program Studi
-                    th IPK Terakhir
-                    th Periode
-                    th Status Prodi
-                    th Status Fakultas
+                    th Beasiswa ID
+                    th Periode ID
+                    th Tanggal Pengajuan
+                    th Status Pengajuan
+                    th Status Pengajuan Fakultas
+                    th Dokumen Pengajuan
                     th Action
+                    th Detail Mahasiswa
             tbody
-                tr
-                    td= result.namaBeasiswa
-                    td= result.nrp
-                    td= result.nama
-                    td= result.prodi
-                    td= result.ipk
-                    td= result.periode
-                    td= result.status_prodi
-                    td= result.status_fakultas
-                    td
-                        button.btn.btn-danger.btn-sm.btn-delete(type="button", data-id=result.pengajuanId) Delete
+                each pengajuan in result
+                    tr
+                        td= pengajuan.pengajuan_id
+                        td= pengajuan.nrp
+                        td= pengajuan.beasiswa_id
+                        td= pengajuan.periode_id
+                        td= pengajuan.tanggal_pengajuan
+                        td= pengajuan.status_pengajuan
+                        td= pengajuan.status_pengajuan_fakultas
+                        td
+                            a(href=`/prodi/download/${pengajuan.dokumen_pengajuan}`) Download
+                        td
+                            button.btn.btn-success.btn-sm(data-toggle="modal", data-target=`#confirmApproveModal${pengajuan.pengajuan_id}`) Approved
+                            button.btn.btn-danger.btn-sm(data-toggle="modal", data-target=`#confirmDeclineModal${pengajuan.pengajuan_id}`) Declined
+                        td
+                            button.btn.btn-info.btn-sm(data-toggle="modal", data-target=`#mahasiswaDetailModal${pengajuan.nrp}`) Lihat Detail
+
     else
-        h1 Anda Tidak Memiliki Pengajuan
+        p Tidak ada data pengajuan yang ditemukan.
 
+    each pengajuan in result
+        .modal.fade(id=`mahasiswaDetailModal${pengajuan.nrp}`, tabindex="-1", role="dialog", aria-labelledby="exampleModalLabel", aria-hidden="true")
+            .modal-dialog(role="document")
+                .modal-content
+                    .modal-header
+                        h5.modal-title#exampleModalLabel Detail Mahasiswa
+                        button.close(type="button", data-dismiss="modal", aria-label="Close")
+                            span(aria-hidden="true") &times;
+                    .modal-body
+                        dl
+                            dt NRP
+                            dd= pengajuan.nrp
+                            dt Nama
+                            dd= pengajuan.nama_mahasiswa
+                            dt Program Studi ID
+                            dd= pengajuan.program_studi_id
+                            dt IPK Terakhir
+                            dd= pengajuan.ipk_terakhir
+                            dt Status Aktif
+                            dd= pengajuan.status_aktif
+                    .modal-footer
+                        button.btn.btn-secondary(type="button", data-dismiss="modal") Close
 
+    each pengajuan in result
+        .modal.fade(id=`confirmApproveModal${pengajuan.pengajuan_id}`, tabindex="-1", role="dialog", aria-labelledby="approveModalLabel", aria-hidden="true")
+            .modal-dialog(role="document")
+                .modal-content
+                    .modal-header
+                        h5.modal-title#approveModalLabel Konfirmasi Approved
+                        button.close(type="button", data-dismiss="modal", aria-label="Close")
+                            span(aria-hidden="true") &times;
+                    .modal-body
+                        p Apakah Anda yakin ingin menyetujui pengajuan dengan ID #{pengajuan.pengajuan_id}?
+                    .modal-footer
+                        button.btn.btn-secondary(type="button", data-dismiss="modal") Cancel
+                        form(action=`/prodi/pengajuan/approve/${pengajuan.pengajuan_id}`, method="post")
+                            button.btn.btn-success(type="submit") Confirm Approved
 
+    each pengajuan in result
+        .modal.fade(id=`confirmDeclineModal${pengajuan.pengajuan_id}`, tabindex="-1", role="dialog", aria-labelledby="declineModalLabel", aria-hidden="true")
+            .modal-dialog(role="document")
+                .modal-content
+                    .modal-header
+                        h5.modal-title#declineModalLabel Konfirmasi Declined
+                        button.close(type="button", data-dismiss="modal", aria-label="Close")
+                            span(aria-hidden="true") &times;
+                    .modal-body
+                        p Apakah Anda yakin ingin menolak pengajuan dengan ID #{pengajuan.pengajuan_id}?
+                    .modal-footer
+                        button.btn.btn-secondary(type="button", data-dismiss="modal") Cancel
+                        form(action=`/prodi/pengajuan/decline/${pengajuan.pengajuan_id}`, method="post")
+                            button.btn.btn-danger(type="submit") Confirm Declined
 
-    script(src="https://cdn.jsdelivr.net/npm/sweetalert2@11")
+    // Modal Konfirmasi Setelah Tindakan
+    .modal.fade(id="actionConfirmationModal", tabindex="-1", role="dialog", aria-labelledby="actionConfirmationModalLabel", aria-hidden="true")
+        .modal-dialog(role="document")
+            .modal-content
+                .modal-header
+                    h5.modal-title#actionConfirmationModalLabel Konfirmasi
+                    button.close(type="button", data-dismiss="modal", aria-label="Close")
+                        span(aria-hidden="true") &times;
+                .modal-body
+                    if actionStatus == 'approved'
+                        p Pengajuan dengan ID #{actionPengajuanId} telah disetujui.
+                    else if actionStatus == 'declined'
+                        p Pengajuan dengan ID #{actionPengajuanId} telah ditolak.
+                .modal-footer
+                    button.btn.btn-secondary(type="button", data-dismiss="modal") Close
+
     script.
-        document.addEventListener('DOMContentLoaded', function () {
-            const deleteButtons = document.querySelectorAll('.btn-delete');
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const status = urlParams.get('status');
+            const pengajuan_id = urlParams.get('pengajuan_id');
 
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    const pengajuanId = this.getAttribute('data-id');
-
-                    Swal.fire({
-                        title: 'Anda yakin?',
-                        text: "Anda akan menghapus pengajuan ini!",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#3085d6',
-                        confirmButtonText: 'Ya, hapus!'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            fetch(`/mahasiswa/pengajuan/${pengajuanId}`, {
-                                method: 'DELETE',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({pengajuanId: pengajuanId})
-                            })
-                                .then(response => response.json())
-                                .then(data => {
-                                    console.log('Server Response:', data);
-                                    if (data.success) {
-                                        Swal.fire(
-                                            'Dihapus!',
-                                            'Pengajuan telah dihapus.',
-                                            'success'
-                                        ).then(() => {
-                                            location.reload();
-                                        });
-                                    } else {
-                                        Swal.fire(
-                                            'Gagal!',
-                                            data.message || 'Pengajuan gagal dihapus.',
-                                            'error'
-                                        );
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('Error:', error);
-                                    Swal.fire(
-                                        'Gagal!',
-                                        'Terjadi kesalahan saat menghapus pengajuan.',
-                                        'error'
-                                    );
-                                });
-                        }
-                    });
-                });
-            });
+            if (status) {
+                const modal = new bootstrap.Modal(document.getElementById('actionConfirmationModal'));
+                document.getElementById('actionConfirmationModalLabel').textContent = status === 'approved' ? 'Approved' : 'Declined';
+                const modalBody = document.querySelector('#actionConfirmationModal .modal-body p');
+                modalBody.textContent = status === 'approved'
+                    ? `Pengajuan dengan ID ${pengajuan_id} telah disetujui.`
+                    : `Pengajuan dengan ID ${pengajuan_id} telah ditolak.`;
+                modal.show();
+            }
         });

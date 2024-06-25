@@ -8,6 +8,8 @@ const { sequelize } = require('./models');
 const mahasiswaRoutes = require('./routes/mahasiswaRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const authRoutes = require('./routes/authRoutes');
+const prodiRoutes = require('./routes/prodiRoutes');
+const fakultasRoutes = require('./routes/fakultasRoutes');
 const { requireAuth } = require('./middleware/auth');
 
 const app = express();
@@ -18,10 +20,10 @@ app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(session({
-    secret: 'secret_key', // Ubah 'secret_key' ke nilai yang lebih aman
+    secret: 'secret_key',
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false } // Gunakan secure: true jika menggunakan HTTPS
+    cookie: { secure: false }
 }));
 
 app.use(flash());
@@ -38,7 +40,9 @@ sequelize.sync()
 // Register routes
 app.use('/auth', authRoutes);
 app.use('/admin', requireAuth, adminRoutes);
-app.use('/mahasiswa', requireAuth, mahasiswaRoutes); 
+app.use('/mahasiswa', requireAuth, mahasiswaRoutes);
+app.use('/fakultas', requireAuth, fakultasRoutes);
+app.use('/prodi', requireAuth, prodiRoutes);
 
 app.get('/', (req, res) => {
     res.redirect('/auth/login');

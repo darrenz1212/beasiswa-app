@@ -15,7 +15,7 @@ block sidebar
         li.nav-item.active
             a.nav-link(href="index.html")
                 i.fas.fa-fw.fa-tachometer-alt
-                span Dashboard
+                span Dashboard Fakultas
 
         // Divider
         hr.sidebar-divider
@@ -31,10 +31,7 @@ block sidebar
             #collapseTwo.collapse(aria-labelledby="headingTwo", data-parent="#accordionSidebar")
                 .bg-white.py-2.collapse-inner.rounded
                     h6.collapse-header Beasiswa :
-                    a.collapse-item(href="/mahasiswa/timeline") Timeline Beasiswa
-                    a.collapse-item(href="/mahasiswa/pengajuan") Pendaftaran
-                    a.collapse-item(href="/mahasiswa/history") Riwayat Pengajuan
-
+                    a.collapse-item(href="/fakultas/pengajuan") Lihat Pengajuan
 
 block top-bar
     nav.navbar.navbar-expand.navbar-light.bg-white.topbar.mb-4.static-top.shadow
@@ -159,94 +156,6 @@ block top-bar
                         i.fas.fa-sign-out-alt.fa-sm.fa-fw.mr-2.text-gray-400
                         | Logout
 
+
 block web-content
-    h1.h4.text-gray-900.mb-4 History Beasiswa
-    if result != null
-        table.table
-            thead
-                tr
-                    th Nama Beasiswa
-                    th NRP
-                    th Nama Mahasiswa
-                    th Program Studi
-                    th IPK Terakhir
-                    th Periode
-                    th Status Prodi
-                    th Status Fakultas
-                    th Action
-            tbody
-                tr
-                    td= result.namaBeasiswa
-                    td= result.nrp
-                    td= result.nama
-                    td= result.prodi
-                    td= result.ipk
-                    td= result.periode
-                    td= result.status_prodi
-                    td= result.status_fakultas
-                    td
-                        button.btn.btn-danger.btn-sm.btn-delete(type="button", data-id=result.pengajuanId) Delete
-    else
-        h1 Anda Tidak Memiliki Pengajuan
-
-
-
-
-    script(src="https://cdn.jsdelivr.net/npm/sweetalert2@11")
-    script.
-        document.addEventListener('DOMContentLoaded', function () {
-            const deleteButtons = document.querySelectorAll('.btn-delete');
-
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    const pengajuanId = this.getAttribute('data-id');
-
-                    Swal.fire({
-                        title: 'Anda yakin?',
-                        text: "Anda akan menghapus pengajuan ini!",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#3085d6',
-                        confirmButtonText: 'Ya, hapus!'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            fetch(`/mahasiswa/pengajuan/${pengajuanId}`, {
-                                method: 'DELETE',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({pengajuanId: pengajuanId})
-                            })
-                                .then(response => response.json())
-                                .then(data => {
-                                    console.log('Server Response:', data);
-                                    if (data.success) {
-                                        Swal.fire(
-                                            'Dihapus!',
-                                            'Pengajuan telah dihapus.',
-                                            'success'
-                                        ).then(() => {
-                                            location.reload();
-                                        });
-                                    } else {
-                                        Swal.fire(
-                                            'Gagal!',
-                                            data.message || 'Pengajuan gagal dihapus.',
-                                            'error'
-                                        );
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('Error:', error);
-                                    Swal.fire(
-                                        'Gagal!',
-                                        'Terjadi kesalahan saat menghapus pengajuan.',
-                                        'error'
-                                    );
-                                });
-                        }
-                    });
-                });
-            });
-        });
+    h1 Fakultas

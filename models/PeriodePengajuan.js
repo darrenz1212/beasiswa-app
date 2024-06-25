@@ -6,7 +6,8 @@ module.exports = (sequelize, DataTypes) => {
             },
             nama_periode: DataTypes.STRING,
             tanggal_mulai : DataTypes.DATE,
-            tanggal_selesai : DataTypes.DATE
+            tanggal_selesai : DataTypes.DATE,
+            status : DataTypes.BOOLEAN
         },
         {
             tableName: 'periode_pengajuan',

@@ -9,15 +9,18 @@ router.get('/', requireAuth, adminController.index);
 // User routes
 router.get('/users', requireAuth, adminController.getUser);
 router.get('/users/:userID', requireAuth, adminController.getUserById);
-router.post('/users', requireAuth, adminController.addUser); // Changed to handle user creation
-router.put('/users/:userID', requireAuth, adminController.updateUser);
-router.delete('/users/:userID', requireAuth, adminController.deleteUser);
+router.post('/users', requireAuth, adminController.addUser);
+router.put('/users/update/:userID', requireAuth, adminController.updateUser);
+router.delete('/users/delete/:userID', requireAuth, adminController.deleteUser);
 
 // Mahasiswa routes
 router.get('/mahasiswa', requireAuth, adminController.getMahasiswa);
 router.get('/mahasiswa/:nrp', requireAuth, adminController.getMahasiswaById);
-router.post('/mahasiswa', requireAuth, adminController.addMahasiswa); // Changed to handle mahasiswa creation
+router.post('/mahasiswa', requireAuth, adminController.addMahasiswa);
 router.put('/mahasiswa/:nrp', requireAuth, adminController.updateMahasiswa);
 router.delete('/mahasiswa/:nrp', requireAuth, adminController.deleteMahasiswa);
+
+router.post('/fakultas', requireAuth, adminController.addFakultas);
+router.post('/program_studi', requireAuth, adminController.addProgramStudi);
 
 module.exports = router;
