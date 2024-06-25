@@ -1,17 +1,22 @@
-const { PengajuanBeasiswa, Mahasiswa } = require('../models');
+const { PengajuanBeasiswa, Mahasiswa, PeriodePengajuan } = require('../models');
 const express = require('express');
 
 const createResponse = (data, status = 200) => {
     return { data, status };
 };
 
-const index = async (req,res)=>{
-    res.render('prodi/index')
-}
+const index = async (req, res) => {
+    res.render('prodi/index');
+};
 
 const getPengajuanByPeriode = async (req, res) => {
     try {
-        const periode_id = 1;
+        const getPeriode = await PeriodePengajuan.findOne({
+            where: {
+                status: true
+            }
+        });
+        const periode_id = getPeriode.periode_id;
 
         const pengajuanList = await PengajuanBeasiswa.findAll({
             where: { periode_id },
@@ -19,10 +24,6 @@ const getPengajuanByPeriode = async (req, res) => {
                 { model: Mahasiswa }
             ]
         });
-
-        if (!pengajuanList.length) {
-            return res.status(404).json({ success: false, message: 'No pengajuan found for periode_id = 1' });
-        }
 
         const result = pengajuanList.map(p => ({
             pengajuan_id: p.pengajuan_id,
@@ -33,7 +34,6 @@ const getPengajuanByPeriode = async (req, res) => {
             status_pengajuan: p.status_pengajuan,
             status_pengajuan_fakultas: p.status_pengajuan_fakultas,
             dokumen_pengajuan: p.dokumen_pengajuan,
-            // Ambil data mahasiswa
             nama_mahasiswa: p.Mahasiswa ? p.Mahasiswa.nama_mahasiswa : 'Tidak ditemukan',
             program_studi_id: p.Mahasiswa ? p.Mahasiswa.program_studi_id : 'Tidak ditemukan',
             ipk_terakhir: p.Mahasiswa ? p.Mahasiswa.ipk_terakhir : 'Tidak ditemukan',
@@ -45,7 +45,6 @@ const getPengajuanByPeriode = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
-
 
 const getPengajuanDetail = async (req, res) => {
     try {
@@ -113,11 +112,72 @@ const declinePengajuan = async (req, res) => {
     }
 };
 
+const periode = async (req, res) => {
+    try {
+        const periode = await PeriodePengajuan.findAll();
+        res.render('prodi/periode', { periode: periode });
+    } catch (error) {
+        res.status(500).json(createResponse({ message: error.message }));
+    }
+};
+
+const createPeriode = async (req, res) => {
+    try {
+        const { periode_id, nama_periode, tanggal_mulai, tanggal_selesai, status } = req.body;
+        const newPeriode = await PeriodePengajuan.create({
+            periode_id,
+            nama_periode,
+            tanggal_mulai,
+            tanggal_selesai,
+            status
+        });
+        res.redirect('/prodi/periode');
+    } catch (error) {
+        res.status(500).json(createResponse({ message: error.message }));
+    }
+};
+
+const updatePeriode = async (req, res) => {
+    try {
+        const { periode_id } = req.params;
+        const { nama_periode, tanggal_mulai, tanggal_selesai, status } = req.body;
+        const periode = await PeriodePengajuan.findOne({ where: { periode_id } });
+        if (!periode) {
+            return res.status(404).json(createResponse({ message: 'Periode not found' }));
+        }
+        periode.nama_periode = nama_periode;
+        periode.tanggal_mulai = tanggal_mulai;
+        periode.tanggal_selesai = tanggal_selesai;
+        periode.status = status;
+        await periode.save();
+        res.redirect('/prodi/periode');
+    } catch (error) {
+        res.status(500).json(createResponse({ message: error.message }));
+    }
+};
+
+const deletePeriode = async (req, res) => {
+    try {
+        const { periode_id } = req.params;
+        const periode = await PeriodePengajuan.findOne({ where: { periode_id } });
+        if (!periode) {
+            return res.status(404).json(createResponse({ message: 'Periode not found' }));
+        }
+        await periode.destroy();
+        res.redirect('/prodi/periode');
+    } catch (error) {
+        res.status(500).json(createResponse({ message: error.message }));
+    }
+};
 
 module.exports = {
     index,
     getPengajuanByPeriode,
     getPengajuanDetail,
     approvePengajuan,
-    declinePengajuan
+    declinePengajuan,
+    periode,
+    createPeriode,
+    updatePeriode,
+    deletePeriode
 };
