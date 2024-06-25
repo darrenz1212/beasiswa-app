@@ -15,7 +15,7 @@ const login = async (req, res) => {
 
         if (user && bcrypt.compareSync(password, user.password)) {
             req.session.user_id = user.user_id;
-            req.session.username = user.username; // Set username di sesi
+            req.session.username = user.username; // Set username in session
             req.session.role = user.role;
 
             if (user.role === 'administrator') {
@@ -42,9 +42,10 @@ const login = async (req, res) => {
 const logout = (req, res) => {
     req.session.destroy((err) => {
         if (err) {
-            return res.status(500).json({ error: err.message });
+            return res.redirect('/'); // Handle error if needed
         }
-        res.render('/auth/login');
+        res.clearCookie('connect.sid'); // Make sure to clear the cookie as well
+        res.redirect('/auth/login');
     });
 };
 
