@@ -26,8 +26,6 @@ block sidebar
                 .bg-white.py-2.collapse-inner.rounded
                     h6.collapse-header Beasiswa :
                     a.collapse-item(href="/prodi/pengajuan") Lihat Pengajuan
-                    a.collapse-item(href="/mahasiswa/pengajuan") Pendaftaran
-                    a.collapse-item(href="/mahasiswa/history") Riwayat Pengajuan
 
 block top-bar
     nav.navbar.navbar-expand.navbar-light.bg-white.topbar.mb-4.static-top.shadow
@@ -167,7 +165,7 @@ block web-content
                         td= p.status_pengajuan
                         td= p.status_pengajuan_fakultas
                         td
-                            a(href=`/prodi/download/${pengajuan.dokumen_pengajuan}`) Download
+                            a(href=`/fakultas/download/${p.dokumen_pengajuan}`) Download
                         td
                             if p.status_pengajuan == 'Disetujui Prodi'
                                 button.btn.btn-success.btn-sm(data-toggle="modal", data-target=`#confirmApproveModal${p.pengajuan_id}`) Approved
